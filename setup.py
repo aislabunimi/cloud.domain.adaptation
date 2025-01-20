@@ -58,7 +58,24 @@ setup(
     tests_require=test_deps,
     # Add here the package dependencies
     install_requires=[
-
+        'munch',
+        'tqdm',
+        'pyyaml',
+        'numpy',
+        'imageio',
+        'lz4',
+        'opencv-python',
+        'Pillow',
+        'torch',
+        'torchvision',
+       ' torchmetrics==1.2.0',
+        'scipy',
+        'open3d',
+        'omegaconf',
+        'hydra-core',
+        'wandb',
+        'codetiming',
+        'pytorch3d @ git+https://github.com/facebookresearch/pytorch3d.git'
     ],
     entry_points={
         'console_scripts': [

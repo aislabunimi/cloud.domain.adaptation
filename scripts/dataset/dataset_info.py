@@ -1,6 +1,8 @@
 import json
 import os
-from scripts.paths import *
+
+from scripts.paths import dataset_path
+
 train_sem_file = os.path.join(dataset_path, 'splits', 'nvs_sem_train.txt')
 train_semantic = []
 with open(train_sem_file) as file:
