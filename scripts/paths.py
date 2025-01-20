@@ -1,0 +1,1 @@
+dataset_path = '/home/antonazzi/myfiles/scannetpp'
