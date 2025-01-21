@@ -34,3 +34,17 @@ def viz_ids(img, img_ids, out_path):
         viz_img[mask] = color
     
     save_img(viz_img, out_path)
+
+def save_ids(img, img_ids, out_path):
+    viz_img = np.zeros_like(img)
+    unique_ids = np.unique(img_ids)
+    # ignore negative and 0
+    unique_ids = unique_ids[unique_ids > 0]
+
+    for obj_id in unique_ids:
+        assert 0 <= obj_id <= 255
+        mask = img_ids == obj_id
+        color = np.array([obj_id, obj_id, obj_id])
+        viz_img[mask] = color
+
+    save_img(viz_img, out_path)

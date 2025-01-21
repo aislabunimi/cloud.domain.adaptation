@@ -75,7 +75,8 @@ setup(
         'hydra-core',
         'wandb',
         'codetiming',
-        'pytorch3d @ git+https://github.com/facebookresearch/pytorch3d.git'
+        'pytorch3d @ git+https://github.com/facebookresearch/pytorch3d.git',
+        'torch_scatter'
     ],
     entry_points={
         'console_scripts': [
