@@ -1,1 +1,1 @@
-dataset_path = '/home/antonazzi/myfiles/scannetpp'
+dataset_path = '/media/antonazzi/New Volume/scannetppv2'

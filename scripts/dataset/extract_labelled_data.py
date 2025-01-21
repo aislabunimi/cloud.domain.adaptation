@@ -21,9 +21,9 @@ conf_raster = OmegaConf.create(
         'no_log': True,
 
         # subsample images
-        'subsample_factor': 1,
+        'subsample_factor': 100,
         # downsample images and rasterize
-        'image_downsample_factor': 2,
+        'image_downsample_factor': 3,
 
         'rasterout_dir': os.path.join(dataset_path, 'raster'),
 
@@ -32,7 +32,7 @@ conf_raster = OmegaConf.create(
         'wandb_group': None,
         'wandb_notes': None,
 
-        'batch_size': 1,
+        'batch_size': 3,
         'limit_batches': None,
         'skip_existing': False,
     }
@@ -59,7 +59,7 @@ conf_semantic = OmegaConf.create(
         # min size of the bbox of an object (each side must be greater than this in pixels)
         'bbox_min_side_pix': 50,
         # subsample images
-        'subsample_factor': 1,
+        'subsample_factor': 100,
         # atleast this fraction of the object's vertices should be visible in the image
         # set to 0 to ignore threshold
         'obj_visible_thresh': 0.1,
