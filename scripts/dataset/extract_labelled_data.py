@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 
@@ -21,9 +22,9 @@ conf_raster = OmegaConf.create(
         'no_log': True,
 
         # subsample images
-        'subsample_factor': 100,
+        'subsample_factor': 1,
         # downsample images and rasterize
-        'image_downsample_factor': 3,
+        'image_downsample_factor': 2,
 
         'rasterout_dir': os.path.join(dataset_path, 'raster'),
 
@@ -32,9 +33,9 @@ conf_raster = OmegaConf.create(
         'wandb_group': None,
         'wandb_notes': None,
 
-        'batch_size': 3,
+        'batch_size': 2,
         'limit_batches': None,
-        'skip_existing': False,
+        'skip_existing': True,
     }
 )
 OmegaConf.set_struct(conf_raster, True)
@@ -59,13 +60,13 @@ conf_semantic = OmegaConf.create(
         # min size of the bbox of an object (each side must be greater than this in pixels)
         'bbox_min_side_pix': 50,
         # subsample images
-        'subsample_factor': 100,
+        'subsample_factor': 1,
         # atleast this fraction of the object's vertices should be visible in the image
         # set to 0 to ignore threshold
-        'obj_visible_thresh': 0.1,
+        'obj_visible_thresh': 0.05,
         # object should cover atleast this fraction of the image's pixels
         # set to 0 to ignore threshold
-        'obj_pixel_thresh': 0.00,
+        'obj_pixel_thresh': 0.05,
         # object should be within this distance from the camera (meters) (set large number to include all objects)
         'obj_dist_thresh': 999,
         # expand the bbox by this fraction in each direction
@@ -83,7 +84,11 @@ scenes = []
 with open(scene_file) as file:
     scenes = [line.rstrip() for line in file]
 
-for scene in scenes:
+environment_types_file = os.path.join(dataset_path, 'metadata', 'scene_types.json')
+environment_types = json.load(open(environment_types_file))
+apartments = [s for s in scenes if 'apartment' in environment_types[s]]
+print(apartments[54:])
+for scene in apartments[55:]:
     if not os.path.exists(os.path.join(dataset_path, 'data', scene)):
         continue
     conf_raster.filter_scenes = [scene]

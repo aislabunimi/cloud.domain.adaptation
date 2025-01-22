@@ -42,9 +42,9 @@ def save_ids(img, img_ids, out_path):
     unique_ids = unique_ids[unique_ids > 0]
 
     for obj_id in unique_ids:
-        assert 0 <= obj_id <= 255
+        #assert 0 <= obj_id <= 255
         mask = img_ids == obj_id
-        color = np.array([obj_id, obj_id, obj_id])
+        color = np.array([(obj_id>>16)%255, (obj_id>>8)%255, obj_id%255])
         viz_img[mask] = color
 
     save_img(viz_img, out_path)
