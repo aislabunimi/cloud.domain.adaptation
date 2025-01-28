@@ -1,3 +1,4 @@
+scannet/official_download_script.py
 visibility_cache
 *.hydra
 .idea
