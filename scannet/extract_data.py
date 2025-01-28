@@ -4,7 +4,7 @@ import time
 
 scenes = [f'scene{i:04}_00' for i in range(10)]
 
-for scene in scenes[1:]:
+for scene in scenes:
     command = f"python3 scannet/extractor.py --filename ${{DATA_ROOT}}/scans/{scene}/{scene}.sens --output_path ${{DATA_ROOT}}/scans/{scene} --export_depth_images --export_color_images --export_poses --export_intrinsics"
 
     print(f'Extract data for {scene}', command)
@@ -33,6 +33,6 @@ for scene in scenes[1:]:
     process.wait()
 
     if process.returncode == 0:
-        print(f"Copy of labels_combined for {scenes} completed successfully.")
+        print(f"Copy of labels_combined for {scene} completed successfully.")
     else:
-        print(f"Copy of labels_combined for {scenes} failed with error {process.returncode}")
+        print(f"Copy of labels_combined for {scene} failed with error {process.returncode}")

@@ -60,5 +60,6 @@ At first request the official script to download Scannet [here](https://github.c
         scene0009_00
           ...
     ```
+* Preprocess the data of the 10 scenes with this script `python3 scannet/scannet_preprocessing.py --scaled_image --semantics`
 * Copy the files [`split.npz`](./scannet/split.npz) and [`split_cl.npz`](./scannet/split_cl.npz) to the `${DATA_ROOT}/scannet_frames_25k` folder. These files contain the indices of the samples that define the train/validation splits used in pre-training and to form the replay buffer in continual adaptation, to ensure reproducibility.
 
