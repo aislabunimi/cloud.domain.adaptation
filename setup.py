@@ -70,13 +70,14 @@ setup(
         'torchvision',
        ' torchmetrics==1.2.0',
         'scipy',
-        'open3d',
+        #'open3d',
+        'pypng',
         'omegaconf',
         'hydra-core',
         'wandb',
         'codetiming',
-        'pytorch3d @ git+https://github.com/facebookresearch/pytorch3d.git',
-        'torch_scatter'
+        #'pytorch3d @ git+https://github.com/facebookresearch/pytorch3d.git',
+        #'torch_scatter'
     ],
     entry_points={
         'console_scripts': [
