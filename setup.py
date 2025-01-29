@@ -76,6 +76,8 @@ setup(
         'hydra-core',
         'wandb',
         'codetiming',
+        'pytorch_lightning',
+        'scikit-image'
         #'pytorch3d @ git+https://github.com/facebookresearch/pytorch3d.git',
         #'torch_scatter'
     ],
