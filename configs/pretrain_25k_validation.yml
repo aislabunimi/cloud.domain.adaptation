@@ -24,10 +24,9 @@ optimizer:
 
 trainer:
   max_epochs: 150
-  gpus: -1
+  accelerator: 'gpu'
   num_sanity_val_steps: 0
   check_val_every_n_epoch: 1
-  resume_from_checkpoint: false
 
 data_module:
   pin_memory: true
@@ -35,7 +34,7 @@ data_module:
   shuffle: true
   num_workers: 2
   drop_last: false
-  root: data/scannet_frames_25k/scannet_frames_25k
+  root: scannet_frames_25k
   data_preprocessing:
     val_ratio: 0.2
     image_regex: /*/color/*.jpg
