@@ -2,7 +2,7 @@ import random
 import PIL
 import torch
 from torchvision import transforms as tf
-from torchvision.transforms import functional as F
+from torchvision.transforms import functional as F, InterpolationMode
 import warnings
 
 __all__ = ["Augmentation", "AugmentationList", "get_output_size"]
@@ -37,7 +37,7 @@ class Augmentation:
             # this will suppress all warnings in this block
             warnings.simplefilter("ignore")
             self._rot = tf.RandomRotation(degrees=degrees,
-                                          resample=PIL.Image.BILINEAR)
+                                          interpolation=InterpolationMode.BILINEAR)
         self._flip_p = flip_p
         self._degrees = degrees
 
@@ -93,7 +93,7 @@ class Augmentation:
                 img = F.rotate(
                     img,
                     angle,
-                    resample=PIL.Image.BILINEAR,
+                    interpolation=InterpolationMode.BILINEAR,
                     expand=False,
                     center=None,
                     fill=0,
@@ -101,7 +101,7 @@ class Augmentation:
                 label = F.rotate(
                     label,
                     angle,
-                    resample=PIL.Image.NEAREST,
+                    interpolation=InterpolationMode.BILINEAR,
                     expand=False,
                     center=None,
                     fill=0,
@@ -142,7 +142,7 @@ class AugmentationList:
             # this will suppress all warnings in this block
             warnings.simplefilter("ignore")
             self._rot = tf.RandomRotation(degrees=degrees,
-                                          resample=PIL.Image.BILINEAR)
+                                          interpolation=InterpolationMode.NEAREST)
         self._flip_p = flip_p
         self._degrees = degrees
 
@@ -197,7 +197,7 @@ class AugmentationList:
                 img = F.rotate(
                     img,
                     angle,
-                    resample=PIL.Image.BILINEAR,
+                    interpolation=InterpolationMode.BILINEAR,
                     expand=False,
                     center=None,
                     fill=0,
@@ -206,7 +206,7 @@ class AugmentationList:
                     label[_i] = F.rotate(
                         l,
                         angle,
-                        resample=PIL.Image.NEAREST,
+                        interpolation=InterpolationMode.BILINEAR,
                         expand=False,
                         center=None,
                         fill=0,

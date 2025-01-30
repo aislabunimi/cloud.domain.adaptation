@@ -9,30 +9,31 @@ from utils.paths import RESULTS_PATH
 from utils.visualizer import Visualizer
 
 
-class DeepLabV3Lightning(pl.LightningModule):
+class SemanticsLightningNet(pl.LightningModule):
 
-    def __init__(self, parameters):
+    def __init__(self, exp, env):
         super().__init__()
-        self._model = DeepLabV3(parameters["model"])
+        self._model = DeepLabV3(exp["model"])
         self.prev_scene_name = None
 
         self._visualizer = Visualizer(
-            os.path.join(RESULTS_PATH, parameters["general"]["name"], "visualizer"),
-            parameters["visualizer"]["store"],
+            os.path.join(RESULTS_PATH, exp["general"]["name"], "visu"),
+            exp["visualizer"]["store"],
             self,
         )
 
         self._meter = {
-            "val_1": SemanticsMeter(number_classes=parameters["model"]["num_classes"]),
-            "val_2": SemanticsMeter(number_classes=parameters["model"]["num_classes"]),
-            "val_3": SemanticsMeter(number_classes=parameters["model"]["num_classes"]),
-            "test": SemanticsMeter(number_classes=parameters["model"]["num_classes"]),
-            "train": SemanticsMeter(number_classes=parameters["model"]["num_classes"]),
+            "val_1": SemanticsMeter(number_classes=exp["model"]["num_classes"]),
+            "val_2": SemanticsMeter(number_classes=exp["model"]["num_classes"]),
+            "val_3": SemanticsMeter(number_classes=exp["model"]["num_classes"]),
+            "test": SemanticsMeter(number_classes=exp["model"]["num_classes"]),
+            "train": SemanticsMeter(number_classes=exp["model"]["num_classes"]),
         }
 
         self._visu_count = {"val": 0, "test": 0, "train": 0}
 
-        self._parameters = parameters
+        self._exp = exp
+        self._env = env
         self._mode = "train"
         self.length_train_dataloader = 10000
 
@@ -79,7 +80,7 @@ class DeepLabV3Lightning(pl.LightningModule):
         # Compute Loss
         loss = F.cross_entropy(pred, target, ignore_index=-1, reduction="none")
         # Visu
-        # self.visu(ori_image, target+1, pred_argmax+1)
+        self.visu(ori_image, target+1, pred_argmax+1)
         # Loss loggging
         self.log(
             f"{self._mode}/loss",
@@ -179,10 +180,10 @@ class DeepLabV3Lightning(pl.LightningModule):
                 target_lr = self._exp["lr_scheduler"]["poly_cfg"]["target_lr"]
                 power = self._exp["lr_scheduler"]["poly_cfg"]["power"]
                 lambda_lr = (lambda epoch: (
-                    ((max_epochs - min(max_epochs, epoch)) / max_epochs)**
-                    (power)) + (1 - ((
-                        (max_epochs - min(max_epochs, epoch)) / max_epochs)**
-                                     (power))) * target_lr / init_lr)
+                                                   ((max_epochs - min(max_epochs, epoch)) / max_epochs)**
+                                                   (power)) + (1 - ((
+                                                                            (max_epochs - min(max_epochs, epoch)) / max_epochs)**
+                                                                    (power))) * target_lr / init_lr)
                 scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer,
                                                               lambda_lr,
                                                               last_epoch=-1,

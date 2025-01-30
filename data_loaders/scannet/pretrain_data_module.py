@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from typing import Optional
 
 from data_loaders.utils.scannet import ScanNet
+from utils.loading import sanitize_split_file
 from utils.paths import DATASET_PATH, REPO_ROOT
 
 
@@ -20,7 +21,7 @@ class DataModule25K(pl.LightningDataModule):
         split_file = os.path.join(REPO_ROOT, 'scannet',
             self.cfg_dm["data_preprocessing"]["split_file"],
         )
-        img_list = np.load(split_file)
+        img_list = sanitize_split_file(np.load(split_file))
         self.scannet_test = ScanNet(root=os.path.join(DATASET_PATH, self.cfg_dm["root"]),
                                     img_list=img_list["test"],
                                     mode="test")

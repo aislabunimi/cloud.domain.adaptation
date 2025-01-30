@@ -2,13 +2,15 @@ import os
 import shutil
 from pathlib import Path
 import torch
+from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from pytorch_lightning.strategies import DDPStrategy
 import yaml
 from data_loaders.scannet.pretrain_data_module import DataModule25K
-from models.semantic_segmentator import DeepLabV3Lightning
 from pytorch_lightning import seed_everything, Trainer
+
+from models.semantic_segmentator import SemanticsLightningNet
 from utils.loading import load_yaml
-from utils.paths import REPO_ROOT, RESULTS_PATH
+from utils.paths import REPO_ROOT, RESULTS_PATH, DATASET_PATH
 
 parameters = load_yaml(os.path.join(REPO_ROOT, 'configs', 'pretrain_25k_validation.yml'))
 
@@ -25,7 +27,12 @@ Path(experiment_path).mkdir(parents=True, exist_ok=True)
 # Load Model
 ###################################
 
-model = DeepLabV3Lightning(parameters)
+model = SemanticsLightningNet(parameters, {'results': 'experiments',
+                                           'scannet': DATASET_PATH,
+                                           'scannet_frames_25k': 'scannet_frames_25k'})
+print(model._env)
+
+
 
 # Restore pre-trained model
 if parameters['model']['load_checkpoint']:
@@ -43,17 +50,19 @@ if parameters['model']['load_checkpoint']:
         model.load_state_dict(checkpoint, strict=True)
     except RuntimeError as e:
         print(e)
-    #model.load_state_dict(checkpoint, strict=False)
+    model.load_state_dict(checkpoint, strict=False)
 
 ####################################
 # Load dataset
-###################################
+####################################
 
 datamodule = DataModule25K(parameters["data_module"])
 
 trainer = Trainer(**parameters["trainer"],
                   default_root_dir=experiment_path,
-                  strategy=DDPStrategy(find_unused_parameters=False)
+                  strategy=DDPStrategy(find_unused_parameters=False),
 )
 print(type(model))
+print(model._exp)
+
 trainer.test(model, datamodule=datamodule)

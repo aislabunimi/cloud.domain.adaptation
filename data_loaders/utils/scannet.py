@@ -45,6 +45,7 @@ class ScanNet(Dataset):
         """
 
         super(ScanNet, self).__init__()
+        self._root = root
         self._sub = sub
         self._mode = mode
         self._confidence_aux = confidence_aux
@@ -75,7 +76,7 @@ class ScanNet(Dataset):
 
     def __getitem__(self, index):
         # Read Image and Label
-        label, _ = self._label_loader.get(self.label_pths[index])
+        label, _ = self._label_loader.get(os.path.join(self._root, self.label_pths[index]))
         label = torch.from_numpy(label).type(
             torch.float32)[None, :, :]  # C H W -> contains 0-40
         label = [label]
@@ -96,7 +97,7 @@ class ScanNet(Dataset):
                         torch.float32)[None, :, :]
                     label.append(aux_label)
 
-        img = imageio.imread(self.image_pths[index])
+        img = imageio.imread(os.path.join(self._root, self.image_pths[index]))
         img = (torch.from_numpy(img).type(torch.float32).permute(2, 0, 1) / 255
               )  # C H W range 0-1
 
