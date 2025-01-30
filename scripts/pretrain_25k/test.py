@@ -9,7 +9,7 @@ from data_loaders.scannet.pretrain_data_module import DataModule25K
 from pytorch_lightning import seed_everything, Trainer
 
 from models.semantic_segmentator import SemanticsLightningNet
-from utils.loading import load_yaml
+from utils.loading import load_yaml, get_wandb_logger
 from utils.paths import REPO_ROOT, RESULTS_PATH, DATASET_PATH
 
 parameters = load_yaml(os.path.join(REPO_ROOT, 'configs', 'pretrain_25k_validation.yml'))
@@ -22,6 +22,16 @@ if parameters["general"]["clean_up_folder_if_exists"]:
     shutil.rmtree(experiment_path, ignore_errors=True)
 
 Path(experiment_path).mkdir(parents=True, exist_ok=True)
+
+###############################
+# Setup logger
+###############################
+logger = get_wandb_logger(
+    exp=parameters,
+    project_name=parameters['general']['name'],
+    save_dir=experiment_path,
+)
+
 
 ####################################
 # Load Model
@@ -61,8 +71,9 @@ datamodule = DataModule25K(parameters["data_module"])
 trainer = Trainer(**parameters["trainer"],
                   default_root_dir=experiment_path,
                   strategy=DDPStrategy(find_unused_parameters=False),
+
 )
-print(type(model))
-print(model._exp)
+
+
 
 trainer.test(model, datamodule=datamodule)

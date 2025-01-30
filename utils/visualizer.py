@@ -10,8 +10,6 @@ from PIL import Image, ImageDraw
 
 from utils.colormaps import BINARY_COLORS, SCANNET_CLASSES, SCANNET_COLORS
 
-__all__ = ["Visualizer"]
-
 
 def get_img_from_fig(fig, dpi=180):
     """
@@ -76,9 +74,11 @@ def image_functionality(func):
                     dsize=(int(W / 2), int(H / 2)),
                     interpolation=cv2.INTER_CUBIC,
                 )
+                """
                 if args[0]._pl_model.logger is not None:
                     args[0]._pl_model.logger.experiment.log(
                         {tag: [wandb.Image(ds, caption=tag)]}, commit=False)
+                """
         return func(*args, **kwargs)
 
     return wrap
