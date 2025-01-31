@@ -113,6 +113,10 @@ class Visualizer:
         self._store = store
 
     @image_functionality
+    def plot_in_single_image(self, image, detectron, ground_truth, segmentation, **kwargs):
+        return np.vstack([np.hstack([image, ground_truth]), np.hstack([detectron, segmentation])])
+
+
     def plot_segmentation(self, seg, **kwargs):
         try:
             seg = seg.clone().cpu().numpy()
@@ -131,7 +135,7 @@ class Visualizer:
 
         return img
 
-    @image_functionality
+
     def plot_image(self, img, **kwargs):
         """
         ----------
@@ -155,7 +159,7 @@ class Visualizer:
         img = np.uint8(img)
         return img
 
-    @image_functionality
+
     def plot_detectron(
         self,
         img,

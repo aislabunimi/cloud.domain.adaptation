@@ -49,15 +49,17 @@ class SemanticsLightningNet(pl.LightningModule):
             if (self._visu_count[self._mode]
                     < self._exp["visualizer"]["store_n"][self._mode]):
                 c = self._visu_count[self._mode]
-                self._visualizer.plot_image(image[b],
+                original_image = self._visualizer.plot_image(image[b],
                                             tag=f"{self._mode}_vis/image_{c}")
-                self._visualizer.plot_segmentation(
+                segmentation = self._visualizer.plot_segmentation(
                     pred[b], tag=f"{self._mode}_vis/pred_{c}")
-                self._visualizer.plot_segmentation(
+                ground_truth = self._visualizer.plot_segmentation(
                     target[b], tag=f"{self._mode}_vis/target_{c}")
 
-                self._visualizer.plot_detectron(
+                detectron = self._visualizer.plot_detectron(
                     image[b], target[b], tag=f"{self._mode}_vis/detectron_{c}")
+
+                self._visualizer.plot_in_single_image(image=original_image, ground_truth=ground_truth, detectron=detectron, segmentation=segmentation, tag=f"{self._mode}_vis/all_{c}")
 
                 self._visu_count[self._mode] += 1
             else:

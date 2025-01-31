@@ -73,7 +73,4 @@ trainer = Trainer(**parameters["trainer"],
                   strategy=DDPStrategy(find_unused_parameters=False),
 
 )
-
-
-
 trainer.test(model, datamodule=datamodule)
