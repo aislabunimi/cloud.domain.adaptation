@@ -40,7 +40,7 @@ visualizer:
   store: true
   store_n:
     train: 3
-    val: 3
+    val: 1500
     test: 200
 
 scenes:

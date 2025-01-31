@@ -27,7 +27,7 @@ Path(experiment_path).mkdir(parents=True, exist_ok=True)
 
 model = SemanticsLightningNet(parameters, {'results': 'experiments',
                                            'scannet': DATASET_PATH,
-                                           'scannet_frames_25k': 'scannet_frames_25k'})
+                                           'scannet_frames_25k': 'scannet_frames_25k'}, experiment_root=experiment_path)
 
 # Restore pre-trained model
 if parameters['model']['load_checkpoint']:

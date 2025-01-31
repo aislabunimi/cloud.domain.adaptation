@@ -11,13 +11,13 @@ from utils.visualizer import Visualizer
 
 class SemanticsLightningNet(pl.LightningModule):
 
-    def __init__(self, exp, env):
+    def __init__(self, exp, env, experiment_path):
         super().__init__()
         self._model = DeepLabV3(exp["model"])
         self.prev_scene_name = None
 
         self._visualizer = Visualizer(
-            os.path.join(RESULTS_PATH, exp["general"]["name"], "visu"),
+            os.path.join(RESULTS_PATH, experiment_path, "visu"),
             exp["visualizer"]["store"],
             self,
         )

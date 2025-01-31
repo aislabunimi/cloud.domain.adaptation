@@ -31,7 +31,7 @@ for scene in parameters['scenes']:
 
     model = SemanticsLightningNet(parameters, {'results': 'experiments',
                                                'scannet': DATASET_PATH,
-                                               'scannet_frames_25k': 'scannet_frames_25k'})
+                                               'scannet_frames_25k': 'scannet_frames_25k'}, experiment_path=experiment_path)
 
     if parameters['model']['load_checkpoint']:
         checkpoint = torch.load(os.path.join(RESULTS_PATH, parameters["model"]["checkpoint_path"]))
@@ -59,8 +59,7 @@ for scene in parameters['scenes']:
     trainer = Trainer(**parameters["trainer"],
                       default_root_dir=experiment_path,
                       strategy=DDPStrategy(find_unused_parameters=False),
-
                       )
-    trainer.test(model, datamodule=datamodule)
+    trainer.validate(model, datamodule=datamodule)
 
 

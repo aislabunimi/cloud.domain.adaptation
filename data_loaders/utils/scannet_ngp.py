@@ -114,10 +114,9 @@ class ScanNetNGP(Dataset):
 
         label = [label]
 
-        if self._mode.find("train") != -1 and self._data_augmentation:
+        if self._data_augmentation:
             img, label = self._augmenter.apply(img, label)
-        else:
-            img, label = self._augmenter.apply(img, label, only_crop=True)
+
 
         label[0] = label[0] - 1
 
