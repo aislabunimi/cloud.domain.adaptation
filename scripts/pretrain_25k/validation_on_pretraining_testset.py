@@ -1,10 +1,7 @@
 import os
-import shutil
 from pathlib import Path
 import torch
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from pytorch_lightning.strategies import DDPStrategy
-import yaml
 from data_loaders.scannet.pretrain_data_module import DataModule25K
 from pytorch_lightning import seed_everything, Trainer
 
@@ -19,19 +16,10 @@ seed_everything(0)
 
 experiment_path = os.path.join(RESULTS_PATH, parameters['general']['name'])
 if parameters["general"]["clean_up_folder_if_exists"]:
-    shutil.rmtree(experiment_path, ignore_errors=True)
+    pass
+    #shutil.rmtree(experiment_path, ignore_errors=True)
 
 Path(experiment_path).mkdir(parents=True, exist_ok=True)
-
-###############################
-# Setup logger
-###############################
-logger = get_wandb_logger(
-    exp=parameters,
-    project_name=parameters['general']['name'],
-    save_dir=experiment_path,
-)
-
 
 ####################################
 # Load Model
@@ -40,9 +28,6 @@ logger = get_wandb_logger(
 model = SemanticsLightningNet(parameters, {'results': 'experiments',
                                            'scannet': DATASET_PATH,
                                            'scannet_frames_25k': 'scannet_frames_25k'})
-print(model._env)
-
-
 
 # Restore pre-trained model
 if parameters['model']['load_checkpoint']:

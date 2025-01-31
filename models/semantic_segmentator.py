@@ -123,7 +123,7 @@ class SemanticsLightningNet(pl.LightningModule):
         # Compute Loss
         loss = F.cross_entropy(pred, target, ignore_index=-1, reduction="none")
         # Visu
-        # self.visu(ori_image, target+1, pred_argmax+1)
+        self.visu(ori_image, target+1, pred_argmax+1)
         # Loss loggging
         self.log(
             f"{self._mode}/loss",
