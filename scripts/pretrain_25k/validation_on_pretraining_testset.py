@@ -14,7 +14,7 @@ parameters = load_yaml(os.path.join(REPO_ROOT, 'configs', 'pretrain_25k_validati
 
 seed_everything(123)
 
-experiment_path = os.path.join(RESULTS_PATH, parameters['general']['name'])
+experiment_path = os.path.join(RESULTS_PATH, 'pretrain_25k_test_on_train_data')
 if parameters["general"]["clean_up_folder_if_exists"]:
     pass
     #shutil.rmtree(experiment_path, ignore_errors=True)

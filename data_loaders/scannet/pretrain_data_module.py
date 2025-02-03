@@ -24,7 +24,7 @@ class DataModule25K(pl.LightningDataModule):
         )
         img_list = sanitize_split_file(np.load(split_file))
         self.scannet_test = ScanNet(root=os.path.join(DATASET_PATH, self.cfg_dm["root"]),
-                                    img_list=[s for s in img_list["test"] if self.consider_only_scene in s],
+                                    img_list=[s for s in img_list["train"] if self.consider_only_scene in s],
                                     mode="test")
         self.scannet_train = ScanNet(root=os.path.join(DATASET_PATH, self.cfg_dm["root"]),
                                      img_list=[s for s in img_list["train"] if self.consider_only_scene in s],

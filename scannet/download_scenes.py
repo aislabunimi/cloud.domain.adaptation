@@ -1,17 +1,26 @@
+import os
 import subprocess
 import time
 
-scenes = [f'scene{i:04}_00' for i in range(10)]
+from utils.paths import DATASET_PATH
+
+# Download scenes of pretraining 25k
+
+base_path = os.path.join(DATASET_PATH, 'scannet_frames_25k')
+scenes = [directory for directory in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, directory))]
+scenes.sort()
+
+# Download firsts 10 scenes for testing
+#scenes = [f'scene{i:04}_00' for i in range(10)]
 
 for scene in scenes:
-    command = ("python3 scannet/official_download_script.py -o ${DATA_ROOT} --id " + scene
-               )
+    command = ("python3 scannet/official_download_script.py -o ${DATA_ROOT} --id " + scene)
     process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE)
-    time.sleep(3)
+    time.sleep(1)
     process.stdin.write(b'\n')
     process.stdin.flush()
 
-    time.sleep(3)
+    time.sleep(1)
     process.stdin.write(b'\n')
     process.stdin.flush()
 
