@@ -12,10 +12,11 @@ from utils.paths import DATASET_PATH, REPO_ROOT
 
 class DataModule25K(pl.LightningDataModule):
 
-    def __init__(self, cfg_dm: dict):
+    def __init__(self, cfg_dm: dict, consider_only_scene: str = ''):
         super().__init__()
 
         self.cfg_dm = cfg_dm
+        self.consider_only_scene = consider_only_scene
 
     def setup(self, stage: Optional[str] = None) -> None:
         split_file = os.path.join(REPO_ROOT, 'scannet',
@@ -23,13 +24,13 @@ class DataModule25K(pl.LightningDataModule):
         )
         img_list = sanitize_split_file(np.load(split_file))
         self.scannet_test = ScanNet(root=os.path.join(DATASET_PATH, self.cfg_dm["root"]),
-                                    img_list=img_list["test"],
+                                    img_list=[s for s in img_list["test"] if self.consider_only_scene in s],
                                     mode="test")
         self.scannet_train = ScanNet(root=os.path.join(DATASET_PATH, self.cfg_dm["root"]),
-                                     img_list=img_list["train"],
+                                     img_list=[s for s in img_list["train"] if self.consider_only_scene in s],
                                      mode="train")
         self.scannet_val = ScanNet(root=os.path.join(DATASET_PATH, self.cfg_dm["root"]),
-                                   img_list=img_list["val"],
+                                   img_list=[s for s in img_list["val"] if self.consider_only_scene in s],
                                    mode="val")
 
     def train_dataloader(self) -> DataLoader:

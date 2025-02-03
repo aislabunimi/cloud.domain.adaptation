@@ -12,7 +12,7 @@ from utils.paths import REPO_ROOT, RESULTS_PATH, DATASET_PATH
 parameters = load_yaml(os.path.join(REPO_ROOT, 'configs', 'pretrain_25k_validation.yml'))
 
 
-seed_everything(0)
+seed_everything(123)
 
 experiment_path = os.path.join(RESULTS_PATH, parameters['general']['name'])
 if parameters["general"]["clean_up_folder_if_exists"]:
@@ -27,7 +27,7 @@ Path(experiment_path).mkdir(parents=True, exist_ok=True)
 
 model = SemanticsLightningNet(parameters, {'results': 'experiments',
                                            'scannet': DATASET_PATH,
-                                           'scannet_frames_25k': 'scannet_frames_25k'}, experiment_root=experiment_path)
+                                           'scannet_frames_25k': 'scannet_frames_25k'}, experiment_path=experiment_path)
 
 # Restore pre-trained model
 if parameters['model']['load_checkpoint']:
