@@ -1,12 +1,20 @@
+import os
 import shutil
 import subprocess
 import time
 
-scenes = [f'scene{i:04}_00' for i in range(10)]
-remove_sens_file = False
+from utils.paths import DATASET_PATH
+
+base_path = os.path.join(DATASET_PATH, 'scannet_frames_25k')
+scenes = [directory for directory in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, directory))]
+scenes.sort()
+
+
+#scenes = [f'scene{i:04}_00' for i in range(10)]
+remove_sens_file = True
 
 for scene in scenes:
-    command = f"python3 scannet/extractor.py --filename ${{DATA_ROOT}}/scans/{scene}/{scene}.sens --output_path ${{DATA_ROOT}}/scans/{scene} --export_depth_images --export_color_images --export_poses --export_intrinsics"
+    command = f"python3 scannet/extractor.py --filename ${{DATA_ROOT}}/scans/{scene}/{scene}.sens --output_path ${{DATA_ROOT}}/scans/{scene} --export_color_images --export_poses --export_intrinsics"
 
     print(f'Extract data for {scene}', command)
     process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE)
