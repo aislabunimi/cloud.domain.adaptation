@@ -12,10 +12,13 @@ scenes.sort()
 exclude_scenes = [i for i in range(10)]
 
 for scene in scenes:
-    scene_number = int(re.findall(r'\d+', scene)[0])
 
-    if scene_number in exclude_scenes:
+    if scene < 'scene0050_00':
         continue
+    if scene > 'scene0132_01':
+        break
+
+    print(f'Pruning {scene}')
 
     scene_path = os.path.join(DATASET_PATH, 'scans', scene)
     # Remove useless zip
@@ -32,10 +35,10 @@ for scene in scenes:
     folder = 'color'
     images = sorted([int(image.split('.')[0]) for image in os.listdir(os.path.join(scene_path, folder))])
     keep_images = images[::subsample_factor]
-    for folder in ['color_scaled', 'label_40', 'label_40_scaled', 'label-filt']:
+    for folder in ['color', 'color_scaled', 'label_40', 'label_40_scaled', 'label-filt']:
         extension = os.listdir(os.path.join(scene_path, folder))[0].split('.')[1]
         images = sorted([int(image.split('.')[0]) for image in os.listdir(os.path.join(scene_path, folder))])
-        keep_images = images[::subsample_factor]
+        #keep_images = images[::subsample_factor]
         for image in images:
             if image in keep_images:
                 continue
