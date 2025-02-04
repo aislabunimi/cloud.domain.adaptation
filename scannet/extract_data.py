@@ -37,7 +37,7 @@ for scene in scenes:
         else:
             print(f"Removed sens file for {scene} failed with error {process.returncode}")
 
-    command = f"unzip -q ${{DATA_ROOT}}/scans/{scene}/{scene}_2d-label-filt.zip -d ${{DATA_ROOT}}/scans/{scene}"
+    command = f"unzip -q -o ${{DATA_ROOT}}/scans/{scene}/{scene}_2d-label-filt.zip -d ${{DATA_ROOT}}/scans/{scene}"
     process = subprocess.Popen(command, shell=True, stdin=subprocess.PIPE)
 
     process.wait()
