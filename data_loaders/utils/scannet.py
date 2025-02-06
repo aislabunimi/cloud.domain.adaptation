@@ -22,6 +22,7 @@ class ScanNet(Dataset):
         self,
         root,
         img_list,
+        label_folder='label',
         mode="train",
         output_trafo=None,
         output_size=(240, 320),
@@ -53,7 +54,7 @@ class ScanNet(Dataset):
         self._label_setting = label_setting
         self.image_pths = img_list
         self.label_pths = [
-            p.replace("color", "label").replace("jpg", "png") for p in img_list
+            p.replace("color", label_folder).replace("jpg", "png") for p in img_list
         ]
         self.length = len(self.image_pths)
         self.aux_labels = False
