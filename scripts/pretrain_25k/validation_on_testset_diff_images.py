@@ -56,7 +56,7 @@ base_path = os.path.join(DATASET_PATH, 'scannet_frames_25k')
 scenes = [directory for directory in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, directory))]
 scenes.sort()
 
-datamodule = DataModule25KTrainDifferent(parameters["data_module"], scene_list=[s for s in scenes if s < 'scene0345_01'])
+datamodule = DataModule25KTrainDifferent(parameters["data_module"], scene_list=[s for s in scenes if s < 'scene0458_00'])
 
 trainer = Trainer(**parameters["trainer"],
                   default_root_dir=experiment_path,

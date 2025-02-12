@@ -16,7 +16,7 @@ scenes.sort()
 
 
 for scene in scenes:
-    if scene < 'scene0345_01':
+    if scene < 'scene0706_01':
         continue
 
     # Download
