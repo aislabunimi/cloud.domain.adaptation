@@ -2,11 +2,12 @@ import os
 
 import cv2
 import numpy as np
+from tqdm import tqdm
 
 from utils.colormaps import SCANNET_COLORS
 from utils.paths import RESULTS_PATH, DATASET_PATH
 
-scenes = ['scene0000_00']
+scenes = ['scene0002_00']
 
 
 
@@ -20,7 +21,7 @@ for scene in scenes:
     semantic_instance_path = os.path.join(DATASET_PATH, 'scans', scene, 'instance_filt_scaled_segmented')
     os.makedirs(semantic_instance_path, exist_ok=True)
 
-    for prediction in os.listdir(pseudolabels_path)[:100]:
+    for prediction in tqdm(os.listdir(pseudolabels_path), desc='Aggregating labels'):
         prediction_path = os.path.join(pseudolabels_path, prediction)
 
         prediction_image = cv2.imread(prediction_path, cv2.COLOR_BGR2RGB)[240:, 320:, ::-1]
@@ -44,7 +45,7 @@ for scene in scenes:
 
 
 
-    for prediction in os.listdir(pseudolabels_path)[:100]:
+    for prediction in tqdm(os.listdir(pseudolabels_path), desc='Saving semantic instance segmented'):
         instance_image =cv2.imread(os.path.join(instances_path, f'{prediction.split("_")[2]}.png'))[:, :, 0]
         prediction_path = os.path.join(pseudolabels_path, prediction)
 
