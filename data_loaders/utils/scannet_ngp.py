@@ -130,7 +130,9 @@ class ScanNetNGP(Dataset):
         if self._mode != "train":
             current_scene_name = os.path.normpath(self.image_pths[index]).split(
                 os.path.sep)[-3]
-            ret += (current_scene_name,)
+            current_image_name = os.path.normpath(self.image_pths[index]).split(
+                os.path.sep)[-1]
+            ret += (current_scene_name, current_image_name,)
 
         return ret
 

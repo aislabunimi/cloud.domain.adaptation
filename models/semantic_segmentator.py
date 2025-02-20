@@ -40,7 +40,7 @@ class SemanticsLightningNet(pl.LightningModule):
     def forward(self, image: torch.Tensor) -> torch.Tensor:
         return self._model(image)
 
-    def visu(self, image, target, pred):
+    def visu(self, image, target, pred, image_name=None):
         if not (self._visu_count[self._mode]
                 < self._exp["visualizer"]["store_n"][self._mode]):
             return
@@ -59,7 +59,11 @@ class SemanticsLightningNet(pl.LightningModule):
                 detectron = self._visualizer.plot_detectron(
                     image[b], target[b], tag=f"{self._mode}_vis/detectron_{c}")
 
-                self._visualizer.plot_in_single_image(image=original_image, ground_truth=ground_truth, detectron=detectron, segmentation=segmentation, tag=f"{self._mode}_vis/all_{c}")
+                if image_name is None:
+                    tag = f"{self._mode}_vis/all_{c}"
+                else:
+                    tag = f"{self._mode}_vis/all_{c}_{image_name[b].split('.')[0]}"
+                self._visualizer.plot_in_single_image(image=original_image, ground_truth=ground_truth, detectron=detectron, segmentation=segmentation, tag=tag)
 
                 self._visu_count[self._mode] += 1
             else:
@@ -108,7 +112,7 @@ class SemanticsLightningNet(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx: int) -> None:
         dataloader_idx = 0  # TODO: modify back
-        image, target, ori_image, scene_name = batch
+        image, target, ori_image, scene_name, image_name = batch
         scene_name = scene_name[0]
         output = self(image)
         pred = F.softmax(output["out"], dim=1)
@@ -123,7 +127,7 @@ class SemanticsLightningNet(pl.LightningModule):
         # Compute Loss
         loss = F.cross_entropy(pred, target, ignore_index=-1, reduction="none")
         # Visu
-        self.visu(ori_image, target+1, pred_argmax+1)
+        self.visu(ori_image, target+1, pred_argmax+1, image_name=image_name)
         # Loss loggging
         self.log(
             f"{self._mode}/loss",
