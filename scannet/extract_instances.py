@@ -30,5 +30,3 @@ for scene in scenes:
 
         instance_image_scaled = cv2.resize(instance_image, (W, H), interpolation=cv2.INTER_NEAREST)
         cv2.imwrite(os.path.join(DATASET_PATH, 'scans', scene, 'instance_filt_scaled', image_name), instance_image_scaled)
-
-
