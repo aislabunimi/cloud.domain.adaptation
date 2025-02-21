@@ -7,7 +7,7 @@ from tqdm import tqdm
 from utils.colormaps import SCANNET_COLORS
 from utils.paths import RESULTS_PATH, DATASET_PATH
 
-scenes = ['scene0002_00']
+scenes = ['scene0009_00']
 
 
 
