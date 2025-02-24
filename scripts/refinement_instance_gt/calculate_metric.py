@@ -8,7 +8,7 @@ from metrics.metrics import SemanticsMeter
 from utils.colormaps import SCANNET_COLORS
 from utils.paths import DATASET_PATH
 
-scenes = ['scene0002_00']
+scenes = ['scene0009_00']
 
 for scene in scenes:
     semantic_instances_path = os.path.join(DATASET_PATH, 'scans', scene, 'instance_filt_scaled_segmented')
@@ -19,12 +19,11 @@ for scene in scenes:
 
             semantic_instance_image[np.all(semantic_instance_image == color, axis=-1)] = [i, i, i]
 
-        semantic_instance_image = semantic_instance_image[:, :, 0]
+        semantic_instance_image = semantic_instance_image[:, :, 0] - 1
         gt = cv2.imread(os.path.join(DATASET_PATH, 'scans', scene, 'label_40_scaled', semantic_instance_path),
-                        cv2.IMREAD_UNCHANGED)
+                        cv2.IMREAD_UNCHANGED) - 1
         metric.update(semantic_instance_image, gt)
     print(metric.measure())
-    print('ciao')
 
 
 
