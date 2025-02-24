@@ -15,12 +15,14 @@ class FineTuneDataModule(pl.LightningDataModule):
     def __init__(
         self,
         exp: dict,
-        scene: str
+        scene: str,
+        validation_equal_test: bool = False
     ):
         super().__init__()
         self.exp = exp
         self.cfg_loader = self.exp["data_module"]
         self.scene = scene
+        self.validation_equal_test = validation_equal_test
 
     def setup(self, stage: Optional[str] = None) -> None:
         ## test adaption (last 20% of the new scenes)
@@ -65,7 +67,7 @@ class FineTuneDataModule(pl.LightningDataModule):
 
     def val_dataloader(self) -> DataLoader:
         return DataLoader(
-            self.scannet_test_ada,
+            self.scannet_test_ada if not self.validation_equal_test else self.scannet_train,
             batch_size=
             1,  ## set bs=1 to ensure a batch always has frames from the same scene
             drop_last=False,
