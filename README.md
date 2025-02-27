@@ -6,6 +6,28 @@ With python 3.10:
 * Define the CUDA_HOME environment variable inside the .bashrc file `export CUDA_HOME="/usr/local/cuda-12.1"`
 * Install the repo using pip `pip3 install -e .`
 
+## Use docker
+We prive a docker container with ros1 noetic installed.
+To run the code with ROS using the container we provide a script with four commands:
+* `start`: Starts the ROS Docker environment by executing the specified Docker Compose file.
+* `stop`: Stops and removes the Docker containers defined in the Docker Compose file.
+* `restart`: Stops, rebuilds, and restarts the Docker containers.
+* `build`: Builds the Docker containers defined in the Docker Compose file.
+
+To run a command type
+```
+chmod +x docker/use_container.sh
+./docker/use_container.sh command
+```
+
+When the container is running, open a VSCODE session inside the container by
+1. Launch VSCode and open your project directory.
+2. After starting the Docker container (as described earlier), press `Ctrl` + `Shift` + `P` (or `Cmd` + `Shift` + `P` on macOS).
+3. Type "Dev Containers: Attach to running container" and select the running container.
+4. VSCode will open a new window within the container, providing a seamless development environment.
+
+The folder of the repository will be linked to the host device, every file modification is maintaned 
+
 ## Dataset preparation
 At first request the official script to download Scannet [here](https://github.com/ScanNet/ScanNet/tree/master) and copy it inside a python file in `scannet/official_download_script.py`
 
