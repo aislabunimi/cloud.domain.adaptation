@@ -36,3 +36,4 @@ services:
       - $HOME/.Xauthority:/root/.Xauthority:rw
       - /var/run/dbus:/var/run/dbus
       - $HOME/.ssh:/root/.ssh
+      - ../:/root/code
