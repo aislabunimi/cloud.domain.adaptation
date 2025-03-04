@@ -127,12 +127,12 @@ class ScanNetNGP(Dataset):
         ret = (img, label[0].type(torch.int64)[0, :, :])
         ret += (img_ori,)
 
-        if self._mode != "train":
-            current_scene_name = os.path.normpath(self.image_pths[index]).split(
+
+        current_scene_name = os.path.normpath(self.image_pths[index]).split(
                 os.path.sep)[-3]
-            current_image_name = os.path.normpath(self.image_pths[index]).split(
+        current_image_name = os.path.normpath(self.image_pths[index]).split(
                 os.path.sep)[-1]
-            ret += (current_scene_name, current_image_name,)
+        ret += (current_scene_name, current_image_name,)
 
         return ret
 
