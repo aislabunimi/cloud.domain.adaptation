@@ -14,6 +14,11 @@ To run the code with ROS using the container we provide a script with four comma
 * `restart`: Stops, rebuilds, and restarts the Docker containers.
 * `build`: Builds the Docker containers defined in the Docker Compose file.
 
+The first time run the following command inside docker:
+* `catkin_make --directory /root/code/ros_ws`
+* `echo "source /root/code/ros_ws/devel/setup.bash" >> ~/.bashrc`
+* `source ~/.bashrc`
+
 To run a command type
 ```
 chmod +x docker/use_container.sh

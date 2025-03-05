@@ -32,12 +32,8 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 RUN apt-get update && apt-get install -y ros-noetic-code-coverage
 
 
-# #Python packages
+# Python packages
 RUN apt install -y python3-pip 
 RUN pip3 install -U catkin_tools 
-
-# Build and source our workspace
-RUN catkin_make --directory /root/code/ros_ws
-RUN echo "source /root/code/ros_ws/devel/setup.bash" >> ~/.bashrc
 
 RUN echo "Build complete"
