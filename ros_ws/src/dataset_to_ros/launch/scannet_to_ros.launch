@@ -1,0 +1,9 @@
+<launch>
+        <arg name="scene_id_arg" default="scene0000_00" />
+        <arg name="first_message_number_arg" default="0" />
+        <arg name="scannet_folder_arg" default="/root/scannet" />
+
+        <node pkg="dataset_to_ros" type="scannet_to_ros.py" name="scannet_to_ros" output="screen">
+            <param name="scene_id" value="$(arg scene_id_arg)" />
+        </node>
+</launch>

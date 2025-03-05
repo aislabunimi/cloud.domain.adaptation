@@ -14,7 +14,7 @@ RUN dpkg-reconfigure locales
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ros-noetic-desktop-full
+ && apt-get install -y --no-install-recommends ros-noetic-desktop-full nano
 RUN apt-get install -y --no-install-recommends python3-rosdep build-essential \
     python3-rosdep \
     python3-rosinstall \
@@ -26,14 +26,19 @@ RUN rosdep init \
 
 # Source ROS
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+RUN echo "source /root/code/ros_ws/devel/setup.bash" >> ~/.bashrc
 
 # # Ros packages
 # RUN apt-get update && apt-get install -y ros-noetic-rosserial-server
-RUN apt-get update && apt-get install -y ros-noetic-code-coverage
+RUN apt-get update && apt-get install -y ros-noetic-code-coverage ros-noetic-cv-bridge
 
 
 # Python packages
 RUN apt install -y python3-pip 
 RUN pip3 install -U catkin_tools 
+
+# Install pip requirements
+COPY requirements.txt /opt/app/requirements.txt
+RUN pip3 install -r /opt/app/requirements.txt
 
 RUN echo "Build complete"
