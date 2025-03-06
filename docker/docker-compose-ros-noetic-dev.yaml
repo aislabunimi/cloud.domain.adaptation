@@ -37,4 +37,4 @@ services:
       - /var/run/dbus:/var/run/dbus
       - $HOME/.ssh:/root/.ssh
       - ../:/root/code
-      - /media/antonazzi/7282BB8811273058/scannet/:/root/scannet
+      - /home/antonazzi/myfiles/scannet/:/root/scannet
