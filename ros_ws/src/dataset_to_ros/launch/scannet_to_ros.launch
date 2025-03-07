@@ -1,11 +1,9 @@
 <launch>
-        <arg name="scene_id_arg" default="scene0001_00" />
+        <arg name="scene_id_arg" default="scene0000_00" />
         <arg name="first_message_number_arg" default="0" />
         <arg name="scannet_folder_arg" default="/root/scannet" />
 
-        <!-- Desired dimensions of color and depth images --> 
-        <arg name="W_color_arg" default="640"  />
-        <arg name="H_color_arg" default="480"  />
+        <!-- Desired dimensions of depth images, color images are scaled accordingly --> 
 
         <arg name="W_depth_arg" default="640" />
         <arg name="H_depth_arg" default="480" />
@@ -15,8 +13,6 @@
             <param name="scannet_folder" value="$(arg scannet_folder_arg)" />
             <param name="scene_id" value="$(arg scene_id_arg)" />
             
-            <param name="W_color" value="$(arg W_color_arg)" />
-            <param name="H_color" value="$(arg H_color_arg)" />
             <param name="W_depth" value="$(arg W_depth_arg)" />
             <param name="H_depth" value="$(arg H_depth_arg)" />
 
