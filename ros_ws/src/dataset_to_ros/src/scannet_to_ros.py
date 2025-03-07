@@ -13,6 +13,54 @@ from tf2_msgs.msg import TFMessage
 from cv_bridge import CvBridge
 import tf_conversions
 import copy
+from collections import OrderedDict
+
+labels_to_rgb = OrderedDict([
+    ("unlabeled", (0, 0, 0)),
+    ("wall", (174, 199, 232)),
+    ("floor", (152, 223, 138)),
+    ("cabinet", (31, 119, 180)),
+    ("bed", (255, 187, 120)),
+    ("chair", (188, 189, 34)),
+    ("sofa", (140, 86, 75)),
+    ("table", (255, 152, 150)),
+    ("door", (214, 39, 40)),
+    ("window", (197, 176, 213)),
+    ("bookshelf", (148, 103, 189)),
+    ("picture", (196, 156, 148)),
+    ("counter", (23, 190, 207)),
+    ("blinds", (178, 76, 76)),
+    ("desk", (247, 182, 210)),
+    ("shelves", (66, 188, 102)),
+    ("curtain", (219, 219, 141)),
+    ("dresser", (140, 57, 197)),
+    ("pillow", (202, 185, 52)),
+    ("mirror", (51, 176, 203)),
+    ("floormat", (200, 54, 131)),
+    ("clothes", (92, 193, 61)),
+    ("ceiling", (78, 71, 183)),
+    ("books", (172, 114, 82)),
+    ("refrigerator", (255, 127, 14)),
+    ("television", (91, 163, 138)),
+    ("paper", (153, 98, 156)),
+    ("towel", (140, 153, 101)),
+    ("showercurtain", (158, 218, 229)),
+    ("box", (100, 125, 154)),
+    ("whiteboard", (178, 127, 135)),
+    ("person", (120, 185, 128)),
+    ("nightstand", (146, 111, 194)),
+    ("toilet", (44, 160, 44)),
+    ("sink", (112, 128, 144)),
+    ("lamp", (96, 207, 209)),
+    ("bathtub", (227, 119, 194)),
+    ("bag", (213, 92, 176)),
+    ("otherstructure", (94, 106, 211)),
+    ("otherfurniture", (82, 84, 163)),
+    ("otherprop", (100, 85, 144)),
+])
+
+class_to_rgb = [v for v in labels_to_rgb.values()]
+
 
 def get_camera_info(scannet_folder, scene_id, W_unscaled, H_unscaled, W, H, type):
     K = np.loadtxt(os.path.join(scannet_folder, 'scans', scene_id, 'intrinsic', f'intrinsic_{type}.txt')).astype(float)
@@ -56,17 +104,20 @@ def create_point_cloud(depth_raw, W_depth, H_depth, K_depth, scale=1000):
     point_cloud_raw = np.dstack((x, y, z)).reshape(-1, 3)
     return point_cloud_raw
 
-def publish_all_topics(scene_id, first_message_number, scannet_folder,
+def publish_all_topics(frequency, scene_id, first_message_number, scannet_folder,
                        W_color, H_color,
                        W_depth, H_depth):
     
     publisher_image = rospy.Publisher('camera/color/image_raw', Image, queue_size=10)
+    publisher_image_depth = rospy.Publisher('camera/depth/image_raw', Image, queue_size=10)
+    publisher_image_semantic = rospy.Publisher('camera/semantic/image_raw', Image, queue_size=10)
+    publisher_image_semantic_colored = rospy.Publisher('camera/semantic/image_colored', Image, queue_size=10)
     publisher_camera_color_info = rospy.Publisher('camera/color/camera_info', CameraInfo, queue_size=10)
     publisher_camera_depth_info = rospy.Publisher('camera/depth/camera_info', CameraInfo, queue_size=10)
     publisher_point_cloud = rospy.Publisher('camera/depth/points', PointCloud2, queue_size=10)
 
     rospy.init_node('scannet_to_ros')
-    rate = rospy.Rate(30) # 30hz
+    rate = rospy.Rate(frequency) # 30hz
 
     bridge = CvBridge()
     files = os.listdir(os.path.join(scannet_folder, 'scans', scene_id, 'color_scaled'))
@@ -110,19 +161,13 @@ def publish_all_topics(scene_id, first_message_number, scannet_folder,
     K_depth = get_camera_info(scannet_folder, scene_id, 
                                                 W_unscaled=W_unscaled_depth, H_unscaled=H_unscaled_depth, 
                                                 W=W_depth, H=H_depth, type='depth') 
-    
-    # Convert color image to depth dimension
-    map_color, map_depth = cv2.initUndistortRectifyMap(
-        np.array(K_color).reshape((4, 4))[0:3, 0:3],
-        np.array([0, 0, 0, 0]),
-        np.eye(3),
-        np.array(K_depth).reshape((4, 4))[0:3, 0:3],
-        (W_depth, H_depth),
-        cv2.CV_32FC1,
-      )
-
+    step = 1
+    if frequency == 15:
+        step = 2
+    elif frequency == 10:
+        step = 3
     while not rospy.is_shutdown():
-        for num in range(len(files)):
+        for num in range(0, len(files), step):
 
             current_time = rospy.Time.now()
             # Camera color info message
@@ -168,22 +213,18 @@ def publish_all_topics(scene_id, first_message_number, scannet_folder,
             image_message_header = Header()
             image_message_header.stamp = current_time
             image_message_header.frame_id = 'camera_rgb_link'
-            # Rescale images to depth size
-            #image_raw = cv2.remap(
-             #       image_raw,
-             #       map_color,
-             #       map_depth,
-            #        interpolation=cv2.INTER_NEAREST,
-             #       borderMode=cv2.BORDER_CONSTANT,
-             #       borderValue=0,
-             #   )
             image_raw = scale_image(image=image_raw, W=W_depth, H=H_depth)
-
             image_message = bridge.cv2_to_imgmsg(image_raw, encoding='bgr8', header=image_message_header)
-
-            # Load point cloud
+            
+            # Load depth image
             depth_raw = cv2.imread(os.path.join(scannet_folder, 'scans', scene_id, 'depth', f'{num}.png'), cv2.IMREAD_UNCHANGED).astype(np.float32)
             depth_raw = scale_image(image=depth_raw, W=W_depth, H=H_depth)
+            image_depth_message_header = Header()
+            image_depth_message_header.stamp = current_time
+            image_depth_message_header.frame_id = 'camera_depth_link'
+            image_depth_message = bridge.cv2_to_imgmsg(depth_raw.astype(np.uint16), encoding='16UC1', header=image_depth_message_header)
+
+            # Load point cloud
             # Generate flattened point cloud
             # The raw data are organized as follow [x0, y0, z0, x1, y1, z1, ...]
             # This should be speicified in the point cloud message
@@ -200,24 +241,42 @@ def publish_all_topics(scene_id, first_message_number, scannet_folder,
             #oint_cloud_message.is_bigendian = False,
             point_cloud_message.point_step = 12*24
             point_cloud_message.row_step = 12*24 * len(point_cloud_raw)
+            #rospy.logerr((len(point_cloud_raw), len(point_cloud_raw.tobytes())))
             #point_cloud_message.data = point_cloud_raw.tobytes()
-            point_cloud_message=point_cloud2.create_cloud(point_cloud_message.header, [PointField('x', 0, PointField.FLOAT32, 1), 
-                                          PointField('y', 4, PointField.FLOAT32, 1),
-                                          PointField('z', 8, PointField.FLOAT32, 1)], point_cloud_raw)
+            #point_cloud_message=point_cloud2.create_cloud(point_cloud_message.header, [PointField('x', 0, PointField.FLOAT32, 1), 
+                                          #PointField('y', 4, PointField.FLOAT32, 1),
+                                          #PointField('z', 8, PointField.FLOAT32, 1)], point_cloud_raw)
+            #rospy.logerr((point_cloud_message.fields,point_cloud_message.height, point_cloud_message.width, point_cloud_message.point_step, point_cloud_message.row_step, len(point_cloud_message.data)))
+            
             #Data size (7372800 bytes) does not match width (307200) times height (1) times point_step (12).  Dropping message.
 
+            # Load semantic label
+            image_semantic = cv2.imread(os.path.join(scannet_folder, 'scans', scene_id, 'label_40', f'{num}.png'), cv2.IMREAD_UNCHANGED)
+            image_semantic_colored = cv2.cvtColor(cv2.imread(os.path.join(scannet_folder, 'scans', scene_id, 'label_40_colored', f'{num}.png')), cv2.COLOR_BGR2RGB)
             
-
-
+            image_semantic_colored = image_semantic_colored.astype(np.uint8)
+            image_semantic_message_header = Header()
+            image_semantic_message_header.stamp = current_time
+            image_semantic_message_header.frame_id = 'camera_semantic_link'
+            image_semantic_message_colored = bridge.cv2_to_imgmsg(image_semantic_colored, encoding="rgb8", header=image_semantic_message_header)
+            image_semantic_message_header = Header()
+            image_semantic_message_header.stamp = current_time
+            image_semantic_message_header.frame_id = 'camera_semantic_link'
+            image_semantic_message = bridge.cv2_to_imgmsg(image_semantic, header=image_semantic_message_header)
             # Publish all topics
             transform_broadcaster.sendTransform(camera_transform_message)
             publisher_image.publish(image_message)
             publisher_camera_color_info.publish(camera_info_color_message)
+            publisher_image_depth.publish(image_depth_message)
             publisher_camera_depth_info.publish(camera_info_depth_message)
-            publisher_point_cloud.publish(point_cloud_message)
+            publisher_image_semantic.publish(image_semantic_message)
+            publisher_image_semantic_colored.publish(image_semantic_message_colored)
+
+            #publisher_point_cloud.publish(point_cloud_message)
             rate.sleep()
 
 if __name__ == '__main__':
+    frequency = rospy.get_param('/scannet_to_ros/frequency', default=30)
     scene_id = rospy.get_param("/scannet_to_ros/scene_id", default='scene0000_00')
     first_message_number = rospy.get_param("/scannet_to_ros/first_message_number", default=0)
     scannet_folder = rospy.get_param("/scannet_to_ros/scannet_folder", default='/root/scannet')
@@ -228,6 +287,6 @@ if __name__ == '__main__':
     W_color = W_depth
     H_color = H_depth
     try:
-        publish_all_topics(scene_id, first_message_number, scannet_folder, W_color, H_color, W_depth, H_depth)
+        publish_all_topics(frequency, scene_id, first_message_number, scannet_folder, W_color, H_color, W_depth, H_depth)
     except rospy.ROSInterruptException:
         pass

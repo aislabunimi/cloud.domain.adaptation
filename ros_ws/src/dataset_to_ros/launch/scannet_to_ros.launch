@@ -1,4 +1,6 @@
 <launch>
+        <!-- Desired frequency to play the dataset, POSSIBLE VALUES ARE (30, 15, 10) Hz -->
+        <arg name="frequency_arg" default="30" />
         <arg name="scene_id_arg" default="scene0000_00" />
         <arg name="first_message_number_arg" default="0" />
         <arg name="scannet_folder_arg" default="/root/scannet" />
@@ -9,6 +11,7 @@
         <arg name="H_depth_arg" default="480" />
 
         <node pkg="dataset_to_ros" type="scannet_to_ros.py" name="scannet_to_ros" output="screen">
+            <param name="frequency" value="$(arg frequency_arg)" />
             <param name="first_message_number" value="$(arg first_message_number_arg)" />
             <param name="scannet_folder" value="$(arg scannet_folder_arg)" />
             <param name="scene_id" value="$(arg scene_id_arg)" />

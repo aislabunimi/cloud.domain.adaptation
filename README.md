@@ -42,6 +42,8 @@ At first request the official script to download Scannet [here](https://github.c
 * Extract the content in a subfolder called `${DATA_ROOT}/scannet_frames_25k` and copy the file `scannetv2-labels.combined.tsv` inside it
 * Download the data of the scenes from 0 to 10 with `python3 scannet/download_scenes.py`
 * Extract all the sensor data for each of the downloaded scenes from 0000 to 0009. To do this, run `python3 scannet/extract_data.py`
+
+* For the data you want to play with ros, you need to save the colored labels with the following script `python3 scannet/export colored_labels.py`
 * At the end of the process, the `${DATA_ROOT}` folder should contain _at least_ the following data, structured as below:
 
     ```shell
