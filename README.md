@@ -7,7 +7,7 @@ With python 3.10:
 * Install the repo using pip `pip3 install -e .`
 
 ## Use docker
-We prive a docker container with ros1 noetic installed.
+We provide a docker container with ROS Noetic installed.
 To run the code with ROS using the container we provide a script with four commands:
 * `start`: Starts the ROS Docker environment by executing the specified Docker Compose file.
 * `stop`: Stops and removes the Docker containers defined in the Docker Compose file.
