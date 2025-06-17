@@ -113,7 +113,7 @@ for scene in [f'scene000{i}_00' for i in range(0, 10)]:
                       )
     #trainer.validate(model, datamodule=datamodule)
 
-    #trainer.validate(model, datamodule=datamodule)
+    trainer.validate(model, datamodule=datamodule)
     trainer.fit(model, datamodule=datamodule)
     trainer.validate(model, datamodule=datamodule)
 
