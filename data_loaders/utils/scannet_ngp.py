@@ -80,6 +80,7 @@ class ScanNetNGP(Dataset):
 
         # If training mode, load the specified pseudo labels, otherwise (val and test) use the gt as labels
         if mode == 'train':
+            print(label_folder)
             self.label_gt_pths = self.labels_pths
         else:
             self.label_gt_pths = [

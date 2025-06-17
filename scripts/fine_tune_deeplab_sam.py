@@ -59,12 +59,12 @@ seed_everything(123)
 voxel = 5
 method = 'C'
 imsize_sam = 'b'
-pseudo3d = True
+pseudo3d = False
 deeplab = False
 
 for scene in [f'scene000{i}_00' for i in range(8, 9)]:
 
-    experiment_path = os.path.join(RESULTS_PATH, 'fine_tune_3D', f'pseudo{voxel}', scene)
+    experiment_path = os.path.join(RESULTS_PATH, 'fine_tune_sam', f'{method}{imsize_sam}{voxel}', scene)
 
 
     Path(experiment_path).mkdir(parents=True, exist_ok=True)
@@ -113,7 +113,7 @@ for scene in [f'scene000{i}_00' for i in range(8, 9)]:
                       )
     #trainer.validate(model, datamodule=datamodule)
 
-    trainer.validate(model, datamodule=datamodule)
+    #trainer.validate(model, datamodule=datamodule)
     trainer.fit(model, datamodule=datamodule)
     trainer.validate(model, datamodule=datamodule)
 
