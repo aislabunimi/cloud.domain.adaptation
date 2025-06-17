@@ -20,11 +20,6 @@ class ScanNetNGP(Dataset):
         self,
         root,
         scene,
-        deeplab: bool,
-        pseudo3d: bool,
-        voxel: int,
-        method: str,
-        imsize_sam: str = 'b',
         mode="train",
         output_trafo=None,
         output_size=(240, 320),
@@ -58,56 +53,48 @@ class ScanNetNGP(Dataset):
 
         self._label_setting = label_setting
         self.root = root
+        self.image_pths, self.img_num = self.get_image_pth(scene, val_ratio=val_ratio)
 
-        if deeplab:
-            label_folder = 'deeplab'
-        elif pseudo3d:
-            label_folder = f'pseudo{voxel}'
-        else:
-            label_folder = f'sam{method}{imsize_sam}{voxel}'
+        self.image_gt_pths = self.image_pths
 
-        self.labels_pths = self.get_label_pth(scene, label_folder='pseudo5', val_ratio=val_ratio)
-
-        self.labels_pths = [
-            p.replace('pseudo5', label_folder)
-            for p in self.labels_pths
+        self.label_mapping_pths = [
+            p.replace("color_scaled", "mapping_label").replace("jpg", "png")
+            for p in self.image_pths
         ]
-
-        self.image_pths = [
-            p.replace(label_folder, 'color').replace("png", 'jpg')
-            for p in self.labels_pths
-        ]
-
         self.label_gt_pths = [
-            p.replace(label_folder, 'gt')
-            for p in self.labels_pths
+            p.replace("color_scaled", "label_40_scaled").replace("jpg", "png")
+            for p in self.image_pths
         ]
 
         self.length = len(self.image_pths)
-
         self._augmenter = AugmentationList(output_size, degrees, flip_p,
                                            jitter_bcsh)
         self._output_trafo = output_trafo
         self._data_augmentation = data_augmentation
 
-    def get_label_pth(self, scene, label_folder, val_ratio=0.8):
+    def get_image_pth(self, scene, val_ratio=0.2):
+        img_list = []
+        img_num = []
 
-        # The path of images are always loaded from this folder because we do not render the labels (for kimera and SAM) without a valid pose
-        all_labels = glob(f'{self.root}/{scene}/{label_folder}/*png')
-
-        all_labels = sorted(all_labels,
+        all_imgs = glob(self.root + "/" + scene + "/color_scaled/*jpg")
+        all_imgs = sorted(all_imgs,
                               key=lambda x: int(os.path.basename(x)[:-4]))
-
-        if self._mode == 'val':
-            return all_labels[int(len(all_labels) * val_ratio):]
+        val_imgs = all_imgs[-int(len(all_imgs) * val_ratio):]
+        # val_imgs = val_imgs[: len(val_imgs)//4*4]
+        train_imgs = all_imgs[:-int(len(all_imgs) * val_ratio)]
+        if self._mode == "train":
+            img_list.extend(train_imgs[::self._sub])
+            img_num.append(len(train_imgs[::self._sub]))
         else:
-            return all_labels[:int(len(all_labels) * val_ratio)]
+            img_list.extend(val_imgs[::self._sub])
+
+        return img_list, img_num
 
     def __getitem__(self, index):
         # Read Image and Label
 
 
-        img = cv2.imread(self.image_pths[index],
+        img = cv2.imread(self.image_gt_pths[index],
                                  cv2.IMREAD_UNCHANGED)
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)

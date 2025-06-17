@@ -15,62 +15,42 @@ class FineTuneDataModule(pl.LightningDataModule):
     def __init__(
         self,
         exp: dict,
-        dataset_path: str,
         scene: str,
-        deeplab: bool,
-        pseudo3d: bool,
-        voxel: int,
-        method: str,
-        imsize_sam: str,
         validation_equal_test: bool = False
     ):
         super().__init__()
-        self.dataset_path = dataset_path
-        self.voxel = voxel
-        self.method = method
-        self.imsize_sam = imsize_sam
         self.exp = exp
-        self.deeplab = deeplab
-        self.pseudo3d = pseudo3d
         self.cfg_loader = self.exp["data_module"]
         self.scene = scene
         self.validation_equal_test = validation_equal_test
 
     def setup(self, stage: Optional[str] = None) -> None:
         ## test adaption (last 20% of the new scenes)
-        self.scannet_test_validation = ScanNetNGP(
-            root=self.dataset_path,
+        finetune_seqs = self.exp["scenes"]
+        self.scannet_test_ada = ScanNetNGP(
+            root=os.path.join(DATASET_PATH, 'scans'),
             mode="val",  # val
-            deeplab=self.deeplab,
-            pseudo3d=self.pseudo3d,
             scene=self.scene,
-            voxel=self.voxel,
-            method=self.method,
-            imsize_sam=self.imsize_sam,
-            val_ratio=self.exp['data_module']['val_ratio']
+            val_ratio=self.exp['data_module']['data_preprocessing']['val_ratio']
         )
-        self.scannet_test_gen = ScanNetNGP(
-            root=self.dataset_path,
-            mode="val",  # val
-            deeplab=self.deeplab,
-            pseudo3d=self.pseudo3d,
-            scene=self.scene,
-            voxel=self.voxel,
-            method=self.method,
-            imsize_sam=self.imsize_sam,
-            val_ratio=self.exp['data_module']['val_ratio']
+        ## test generation
+        split_file = os.path.join(
+            REPO_ROOT,
+            'scannet',
+            'split.npz'
+        )
+        img_list = sanitize_split_file(np.load(split_file))
+        self.scannet_test_gen = ScanNet(
+            root=os.path.join(DATASET_PATH, self.cfg_loader["root"]),
+            img_list=img_list["test"],
+            mode="test",
         )
 
         self.scannet_train = ScanNetNGP(
-            root=self.dataset_path,
+            root=os.path.join(DATASET_PATH, 'scans'),
             mode="train",  # val
             scene=self.scene,
-            deeplab=self.deeplab,
-            pseudo3d=self.pseudo3d,
-            voxel=self.voxel,
-            method=self.method,
-            imsize_sam=self.imsize_sam,
-            val_ratio=self.exp['data_module']['val_ratio']
+            val_ratio=self.exp['data_module']['data_preprocessing']['val_ratio']
         )
 
     def train_dataloader(self) -> DataLoader:
@@ -87,8 +67,9 @@ class FineTuneDataModule(pl.LightningDataModule):
 
     def val_dataloader(self) -> DataLoader:
         return DataLoader(
-            self.scannet_test_validation,
-            batch_size=1,  ## set bs=1 to ensure a batch always has frames from the same scene
+            self.scannet_test_ada if not self.validation_equal_test else self.scannet_train,
+            batch_size=
+            1,  ## set bs=1 to ensure a batch always has frames from the same scene
             drop_last=False,
             shuffle=False,  # false
             pin_memory=self.cfg_loader["pin_memory"],

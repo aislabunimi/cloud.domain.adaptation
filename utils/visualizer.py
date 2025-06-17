@@ -123,7 +123,7 @@ class Visualizer:
         except:
             pass
 
-        if seg.dtype == np.bool:
+        if seg.dtype == bool:
             col_map = BINARY_COLORS
         else:
             col_map = SCANNET_COLORS
@@ -183,7 +183,7 @@ class Visualizer:
             label = label.clone().cpu().numpy()
         except:
             pass
-        label = label.astype(np.long)
+        label = label.astype(np.int64)
 
         H, W, C = img.shape
         uni = np.unique(label)

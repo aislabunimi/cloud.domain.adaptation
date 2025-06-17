@@ -93,14 +93,15 @@ class SemanticsLightningNet(pl.LightningModule):
             loss.mean().item(),
             on_step=self._mode == "train",
             on_epoch=self._mode != "train",
+            sync_dist=True
         )
         return loss.mean()
 
     def on_train_epoch_end(self):
         m_iou, total_acc, m_acc = self._meter["train"].measure()
-        self.log(f"train/total_accuracy", total_acc, rank_zero_only=True)
-        self.log(f"train/mean_accuracy", m_acc, rank_zero_only=True)
-        self.log(f"train/mean_IoU", m_iou, rank_zero_only=True)
+        self.log(f"train/total_accuracy", total_acc, rank_zero_only=True, sync_dist=True)
+        self.log(f"train/mean_accuracy", m_acc, rank_zero_only=True, sync_dist=True)
+        self.log(f"train/mean_IoU", m_iou, rank_zero_only=True, sync_dist=True)
 
     # VALIDATION
     def on_validation_epoch_start(self):
@@ -134,14 +135,15 @@ class SemanticsLightningNet(pl.LightningModule):
             loss.mean().item(),
             on_step=self._mode == "train",
             on_epoch=self._mode != "train",
+            sync_dist=True
         )
         return loss.mean()
 
     def on_validation_epoch_end(self):
         m_iou_1, total_acc_1, m_acc_1 = self._meter["val_1"].measure()
-        self.log(f"val/total_accuracy_gg", total_acc_1, rank_zero_only=True)
-        self.log(f"val/mean_accuracy_gg", m_acc_1, rank_zero_only=True)
-        self.log(f"val/mean_IoU_gg", m_iou_1, rank_zero_only=True)
+        self.log(f"val/total_accuracy_gg", total_acc_1, rank_zero_only=True, sync_dist=True)
+        self.log(f"val/mean_accuracy_gg", m_acc_1, rank_zero_only=True, sync_dist=True)
+        self.log(f"val/mean_IoU_gg", m_iou_1, rank_zero_only=True, sync_dist=True)
         self.prev_scene_name = None
 
     # TESTING
@@ -155,9 +157,9 @@ class SemanticsLightningNet(pl.LightningModule):
 
     def on_test_epoch_end(self):
         m_iou, total_acc, m_acc = self._meter["test"].measure()
-        self.log(f"test/total_accuracy", total_acc, rank_zero_only=True)
-        self.log(f"test/mean_accuracy", m_acc, rank_zero_only=True)
-        self.log(f"test/mean_IoU", m_iou, rank_zero_only=True)
+        self.log(f"test/total_accuracy", total_acc, rank_zero_only=True,sync_dist=True)
+        self.log(f"test/mean_accuracy", m_acc, rank_zero_only=True, sync_dist=True)
+        self.log(f"test/mean_IoU", m_iou, rank_zero_only=True, sync_dist=True)
 
     def configure_optimizers(self) -> torch.optim.Optimizer:
         optimizer = self._exp["optimizer"]["name"]
