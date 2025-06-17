@@ -62,7 +62,7 @@ imsize_sam = 'b'
 pseudo3d = True
 deeplab = False
 
-for scene in [f'scene000{i}_00' for i in range(8, 9)]:
+for scene in [f'scene000{i}_00' for i in range(0, 10)]:
 
     experiment_path = os.path.join(RESULTS_PATH, 'fine_tune_3D', f'pseudo{voxel}', scene)
 
