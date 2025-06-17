@@ -64,6 +64,7 @@ class FineTuneDataModule(pl.LightningDataModule):
         self.scannet_train = ScanNetNGP(
             root=self.dataset_path,
             mode="train",  # val
+            data_augmentation=True,
             scene=self.scene,
             deeplab=self.deeplab,
             pseudo3d=self.pseudo3d,
@@ -79,8 +80,6 @@ class FineTuneDataModule(pl.LightningDataModule):
             batch_size=self.cfg_loader["batch_size"],
             drop_last=True,
             shuffle=True,  # only true in train_dataloader
-            collate_fn=self.scannet_train.collate
-            if self.exp["cl"]["active"] else None,
             pin_memory=self.cfg_loader["pin_memory"],
             num_workers=self.cfg_loader["num_workers"],
         )

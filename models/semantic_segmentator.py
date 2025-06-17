@@ -76,7 +76,8 @@ class SemanticsLightningNet(pl.LightningModule):
         self._meter["train"].clear()
 
     def training_step(self, batch, batch_idx: int) -> torch.Tensor:
-        image, target, ori_image = batch
+        print(batch)
+        image, target, ori_image, scene_name, image_name = batch
         output = self(image)
         pred = F.softmax(output["out"], dim=1)
         pred_argmax = torch.argmax(pred, dim=1)

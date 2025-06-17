@@ -11,7 +11,7 @@ from utils.colormaps import SCANNET_COLORS
 base_path = '/home/antonazzi/myfiles/scannet_signorelli/'
 voxel_size = [5]
 methods = ['C']
-for scene_number in range(8, 9):
+for scene_number in range(0, 10):
     for voxel in voxel_size:
         for method in methods:
             path = os.path.join(base_path, f'scene000{scene_number}_00')

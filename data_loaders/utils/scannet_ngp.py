@@ -78,10 +78,14 @@ class ScanNetNGP(Dataset):
             for p in self.labels_pths
         ]
 
-        self.label_gt_pths = [
-            p.replace(label_folder, 'gt')
-            for p in self.labels_pths
-        ]
+        # If training mode, load the specified pseudo labels, otherwise (val and test) use the gt as labels
+        if mode == 'train':
+            self.label_gt_pths = self.labels_pths
+        else:
+            self.label_gt_pths = [
+                p.replace(label_folder, 'gt')
+                for p in self.labels_pths
+            ]
 
         self.length = len(self.image_pths)
 
