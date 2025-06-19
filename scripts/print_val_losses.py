@@ -60,8 +60,8 @@ TRAIN_MODELS_PATH = '/home/antonazzi/myfiles/fine_tune_deeplab'
 seed_everything(123)
 
 voxel = 3
-method = 'A'
-imsize_sam = 's'
+method = 'C'
+imsize_sam = 'b'
 pseudo3d = False
 deeplab = False
 
