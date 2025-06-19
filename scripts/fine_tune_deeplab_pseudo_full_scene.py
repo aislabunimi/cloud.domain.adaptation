@@ -43,7 +43,7 @@ parameters = {
         'val_ratio': 0.8
     },
     'visualizer': {
-        'store': True,
+        'store': False,
         'store_n': {
             'train': 10,
             'val': 5000,
@@ -58,7 +58,7 @@ seed_everything(123)
 
 voxel = 5
 method = 'C'
-imsize_sam = 'b'
+imsize_sam = 's'
 pseudo3d = True
 deeplab = False
 
