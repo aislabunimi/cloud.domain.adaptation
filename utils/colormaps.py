@@ -52,3 +52,24 @@ SCANNET_COLORS = [v for i, v in enumerate(ORDERED_DICT.values())]
 jet = cm.get_cmap("jet")
 BINARY_COLORS = (np.stack([jet(v) for v in np.linspace(0, 1, 2)]) * 255).astype(
     np.uint8)
+
+if __name__ == '__main__':
+    str = ''
+    SCANNET_NAMES = [v for i, v in enumerate(ORDERED_DICT.keys())]
+    for i, (cls, color) in enumerate(zip(SCANNET_NAMES[1:], SCANNET_COLORS[1:])):
+        str += f'\definecolor{{color_{cls}}}{{RGB}}{{{color.__str__().replace("(", "").replace(")", "")}}}\n'
+
+
+    for i, (cls, color) in enumerate(zip(SCANNET_NAMES[1:], SCANNET_COLORS[1:])):
+        str += f'\\newcommand{{\class{cls}}}{{\\textcolor{{color_{cls}}}{{\ding{{108}}}}~\\texttt{{{cls}}}}}\n'
+
+    str+='\n'
+
+    for i, (cls, color) in enumerate(zip(SCANNET_NAMES[1:], SCANNET_COLORS[1:])):
+        str+=f'\class{cls}'
+        if i %7 == 0 and i!=0:
+            str+='\\\\\n'
+        else:
+            str+='&'
+
+    print(str)
