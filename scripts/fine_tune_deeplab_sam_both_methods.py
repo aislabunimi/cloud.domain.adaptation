@@ -22,7 +22,7 @@ parameters = {
         'num_classes': 40
     },
     'trainer': {
-        'max_epochs': 10,
+        'max_epochs': 5,
         'accelerator': 'gpu',
         'num_sanity_val_steps': 0,
         'check_val_every_n_epoch': 1,
