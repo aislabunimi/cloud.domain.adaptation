@@ -73,15 +73,18 @@ class ScanNetNGPFullSceneBothMethods(Dataset):
                 p.replace('pseudo5', label_folder)
                 for p in self.labels_pths
             ]
-            self.label_gt_pths = self.label_gt_pths +  [
-                p.replace('C', 'A')
-                for p in self.label_gt_pths
-            ]
+
             self.image_pths = [
                 p.replace(label_folder, 'color').replace("png", 'jpg')
                 for p in self.label_gt_pths
             ]
-            self.image_pths = self.image_pths + self.image_pths
+
+            self.label_gt_pths = self.label_gt_pths + [
+                p.replace('C', 'A')
+                for p in self.label_gt_pths
+            ]
+            self.image_pths += self.image_pths
+
         else:
             self.label_gt_pths = self.get_label_pth(scene + '_01', label_folder='label_40_scaled')
             self.image_pths = [
